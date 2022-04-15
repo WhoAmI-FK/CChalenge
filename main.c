@@ -53,6 +53,57 @@ void Collatz_Conjecture(int number){
 	printf("%d \nSequence length: %d",number,counter);
 }
 
+
+int getLength(char* s){
+	int i;
+	for(i = 0;(*(s+i))!='\0';++i);
+	return i;
+}
+
+char* left(char* s, int len){
+	static char* buff;
+	int i,original_length;
+	original_length = getLength(s);
+	if(len>original_length) len = original_length;
+	buff = (char*)malloc((len+1)*sizeof(char));
+	if(buff==NULL) exit(1);
+	for(i = 0;i<len;++i){
+		*(buff+i) = *(s+i);
+	}
+	*(buff+i) = '\0';
+	return buff;
+}
+
+char* right(char* s, int len){
+	static char* buff;
+	int i, original_length,j;
+	original_length = getLength(s);
+	if(len>original_length) len = original_length;
+	buff = (char*)malloc((len+1)*sizeof(char));
+	if(buff==NULL) exit(1);		
+	for(i = original_length-len,j=0;j<len;i++,j++)
+	*(buff+j) = *(s+i);
+	*(buff+j) = '\0';
+	return buff;
+}
+
+
+char* mid(char* s, int offset,int len){
+	static char* buff;
+	int i, original_length,j;
+	original_length = getLength(s);
+	if(len>original_length) len = original_length;
+	buff = (char*)malloc((len+1)*sizeof(char));
+	if(buff==NULL) exit(1);
+	for(i = 0;i<len;i++)
+	{
+		*(buff+i) = *(s+offset-1+i);
+		if(*(buff+i)=='\0') break;
+	}
+	*(buff+i)='\0';
+	return buff;
+}
+
 int main()
 {
 	/* task 1 */
@@ -100,9 +151,40 @@ int main()
 	}
 	*/
 	/* task 4 */
+	/*
 	int n;
 	printf("Input positive integer:\t");
 	scanf("%d",&n);
 	Collatz_Conjecture(n);
+	*/
+	/* task 5 */
+	/*
+	char original[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	char deck[27],shuffle[27];
+	const int shufsize =13;
+	int count, s,d;
+	
+	printf("Original deck: %s\n",original);
+	strcpy(deck,original);
+	count = 0;
+	while(1){
+		for(d = 0,s=0;d<shufsize;d++,s+=2){
+			shuffle[s] = deck[d];
+			shuffle[s+1] = deck[d+shufsize];
+		}
+		shuffle[s] = '\0';
+		count++;
+		printf("%2d: %s\n",count, shuffle);
+		if(strcmp(original,shuffle)==0)
+		break;
+		strcpy(deck, shuffle);
+	}
+	*/
+	/* task 6 */
+	char string[] = "Once upon a time, there was a string";
+	printf("Original string: %s\n",string);
+	printf("Left %d characters: %s\n",16, left(string,16));
+	printf("Right %d characters: %s\n",18,right(string,18));
+	printf("Middle %d characters: %s\n",11,mid(string,13,11));
 	return 0;
 }
