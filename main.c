@@ -1,10 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
+#include <math.h>
 #define PSIZE 20
 #define RSIZE 15
 #define ROWS 8
 #define COLS 8
+#define MAXL 10
 char* ordinal(int number){
 	int digit = number%10;
 	char* retVal = number > 20 ? 
@@ -126,6 +129,40 @@ void printChessBoard(char chessboard[ROWS][COLS]){
 		puts("\n");
 	}
 	puts("--------");
+}
+
+double phi(double g, double precision){
+	if(precision){
+		return g + 1/phi(g,precision-1);
+	} 
+	return g;
+}
+
+int getNumberLength(int64_t num){
+	int counter = 0;
+	while(num){
+		num/=10;
+		counter++;
+	}
+	return counter;
+}
+
+void formatOutput(int64_t num){
+	int tmp,i,j;
+	int num_length;
+	num_length = getNumberLength(num);
+	if(num_length>MAXL){
+		printf("The value apparently is too large to handle\n");
+		return;	
+	}
+	for(i = num_length;i>0;i--){
+		if(i%3==0 && i != num_length) printf(",");
+		tmp = num;
+		for(j=0;j<(i-1);++j){
+			tmp/=10;
+		}
+		printf("%d",tmp%10);
+	}
 }
 
 int main()
@@ -347,5 +384,15 @@ int main()
 	
 	/* task 11 */
 	
+	/* task 12 */
+	formatOutput(48266);
+	
+	/* task 13 */
+	
+	/* task 14 */
+	/*
+	printf("%lf",phi(1.0,30));
+	*/
+	/*task 15*/
 	return 0;
 }
