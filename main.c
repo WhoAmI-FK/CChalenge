@@ -8,6 +8,9 @@
 #define ROWS 8
 #define COLS 8
 #define MAXL 10
+#define W_MAX 100
+#define W_MIN 16
+#define W_DEFAULT 40
 char* ordinal(int number){
 	int digit = number%10;
 	char* retVal = number > 20 ? 
@@ -165,7 +168,215 @@ void formatOutput(int64_t num){
 	}
 }
 
-int main()
+struct frame{
+	char b1,b2;
+	int ball1, ball2, score;
+};
+ 
+ int ball_roll(int pins)
+ {
+ 	return (rand()%(pins+1));
+ }
+ 
+ void fill_frame(struct frame* f){
+ 	f->ball1 = ball_roll(10);
+ 	if(f->ball1==10){
+ 		f->b1 = ' ';
+ 		f->b2 = 'X';
+ 		f->ball2 = 0;
+ 		f->score=10;
+	 }else{
+	 	f->b1 = f->ball1 ? f->ball1 + '0' : '-';
+	 	f->ball2 = ball_roll(10-f->ball1);
+	 	if(f->ball1 + f->ball2 == 10)
+	 	{
+	 		f->b2 = '/';	
+		}else{
+			f->b2 = f->ball2 ? f->ball2+'0' : '-';
+		}
+		f->score = f->ball1 + f->ball2;
+	 }
+ }
+void writeline(char *s, char *e)
+{
+	do
+	{
+		if( *s=='\0' )		/* avoid reading beyond the end */
+			return;
+		putchar(*s);
+		s++;
+	}
+	while(s<=e);
+}
+
+char* months[] = {
+	{"January"},
+	{"February"},
+	{"March"},
+	{"April"},
+	{"May"},
+	{"June"},
+	{"July"},
+	{"August"},
+	{"September"},
+	{"October"},
+	{"November"},
+	{"December"}
+};
+
+char* weekDays[]={
+	{"Monday"},
+	{"Tuesday"},
+	{"Wednesday"},
+	{"Thursday"},
+	{"Friday"},
+	{"Saturday"},
+	{"Sunday"}
+};
+
+int daysOfMonthsLeap[12] = {
+		31,
+		29,
+		31, 
+		30,
+		31,
+		30,
+		31,
+		31,
+		30,
+		31,
+		30,
+		31
+	};
+	int daysOfMonths[12] = {
+		31,
+		28,
+		31, 
+		30,
+		31,
+		30,
+		31,
+		31,
+		30,
+		31,
+		30,
+		31
+	};	
+
+void initDaysOfMonths(int* arr, int Year){
+	int isLeap,i;
+	isLeap = isLeapYear(Year);
+	for(i = 0;i<12;i++){
+		*(arr+i) = isLeap ? *(daysOfMonthsLeap+i) : *(daysOfMonths+i);
+	}
+}
+
+void showNextMonday(int extraDays,int Month,int Day,int Year){
+	int feb;
+	int* monthsDays = (int*)malloc(sizeof(int)*12);
+	initDaysOfMonths(monthsDays,Year);
+	while(extraDays){
+		if(Day==monthsDays[Month-1]){
+			Day = 1;
+			Month++;
+		} else Day++;
+		if(Month==13){
+			Month = 1;
+			Year++;
+		}
+		extraDays--;
+	}
+	printf("\nNext Monday will be the %d%s of %s, %d",
+		Day,
+		(Day%10) == 1 && (Day!=11)? "st"
+		: (Day%10) == 2 && (Day!=12)? "nd" 
+		: (Day%10) == 3 && (Day!=13)? "rd" 
+		: "th",
+		months[Month-1],
+		Year
+	);
+	free(months);
+}
+
+struct matrix {
+	int rows;
+	int cols;
+	char *cells;
+};
+
+void fill_matrix(struct matrix g)
+{
+	int row,col;
+
+	for( row=0; row<g.rows; row++ )
+		for( col=0; col<g.cols; col++ )
+			*(g.cells+(row*g.cols)+col) = (rand() % 26) + 'a';
+}
+void output_matrix(struct matrix g)
+{
+	int row,col;
+
+	for( row=0; row<g.rows; row++ )
+	{
+		for( col=0; col<g.cols; col++ )
+			printf(" %c",*(g.cells+(row*g.cols)+col));
+		putchar('\n');
+	}
+}
+
+void rotate_matrix(struct matrix *g)
+{
+	struct matrix *r;
+	int rsize,x,y,i;
+
+	/* create the new (temporary) matrix */
+	r = (struct matrix *)malloc( sizeof(struct matrix) );
+	if( r==NULL )
+	{
+		fprintf(stderr,"Unable to allocate new matrix\n");
+		exit(1);
+	}
+	/* swap the rows and columns (for output) */
+	r->rows = g->cols;
+	r->cols = g->rows;
+	rsize = r->rows*r->cols;
+	r->cells = (char *)malloc( sizeof(char)*rsize );
+	if( r->cells==NULL )
+	{
+		fprintf(stderr,"Unable to allocate cell memory\n");
+		exit(1);
+	}
+
+	/* fill the new matrix with rotated contents */
+	i = 0;
+	for( x=0; x<g->cols; x++ )
+	{
+		for( y=g->rows-1; y>=0; y-- )
+		{
+			/* The cells are read in a rotated fashion,
+			   from the bottom of the first column up
+			   row-by-row, to the top of the last column.
+			   The rotated cell's contents are filled
+			   sequentially using variable 'i' */
+			*(r->cells+i) = *(g->cells+(g->cols*y)+x);
+			i++;
+		}
+	}
+
+	/* copy back to the original matrix */
+	for( i=0; i<rsize; i++ )
+		*(g->cells+i) = *(r->cells+i);
+	/* reset original matrix dimensions */
+	g->cols = r->cols;
+	g->rows = r->rows;
+
+	/* free allocated memory */
+	free(r->cells);
+	free(r);
+}
+
+
+int main(int argc, char* argv[])
 {
 	/* task 1 */
 	/*
@@ -381,18 +592,145 @@ int main()
 	}
 	*/
 	/* task 10 */
-	
+	/*
+		struct matrix grid[3] = {
+		{ 8, 3, NULL },
+		{ 5, 5, NULL },
+		{ 4, 6, NULL }
+	};
+	int x;
+
+	srand( (unsigned)time(NULL) );
+
+	for( x=0; x<3; x++ )
+	{
+		grid[x].cells = (char *)malloc( sizeof(char)*grid[x].rows*grid[x].cols );
+		if( grid[x].cells==NULL )
+		{
+			fprintf(stderr,"Memory allocation error on grid #%d\n",
+					x
+				   );
+			exit(1);
+		}
+	}
+
+
+	for( x=0; x<3; x++ )
+	{
+		fill_matrix(grid[x]);
+		printf("Original matrix %d:\n",x+1);
+		output_matrix(grid[x]);
+		rotate_matrix(&grid[x]);
+		printf("Rotated matrix: %d:\n",x+1);
+		output_matrix(grid[x]);
+	}
+	*/
 	/* task 11 */
-	
+	/*
+	int i,dayOfWeek,Month,Day,Year,count;
+	count =0;
+	scanf("%d",&dayOfWeek);
+	scanf("%d",&Month);
+	scanf("%d",&Day);
+	scanf("%d",&Year);
+	printf("Today is %s, %s %d%s, %d",
+		weekDays[dayOfWeek-1],
+		months[Month-1],
+		Day,
+		(Day%10) == 1 && (Day!=11)? "st"
+		: (Day%10) == 2 && (Day!=12)? "nd" 
+		: (Day%10) == 3 && (Day!=13)? "rd" 
+		: "th",
+		Year
+	);
+	if(dayOfWeek==1){
+		count = 7;		
+	}else{
+	while(dayOfWeek!=1){
+			dayOfWeek = (dayOfWeek+1)%7;
+			count++;
+	}
+	}
+	showNextMonday(count,Month,Day,Year);
+	*/
 	/* task 12 */
-	formatOutput(48266);
+	/*formatOutput(48266);*/
 	
 	/* task 13 */
-	
+	/*
+	struct frame* f = (struct frame*)malloc(sizeof(struct frame)*1);
+	srand( (unsigned)time(NULL) );
+	fill_frame(f);
+	printf("\n| %c|%c|\n",f->b1,f->b2);
+	printf("| %2d |\n",f->score);
+	free(f);
+	*/
 	/* task 14 */
 	/*
 	printf("%lf",phi(1.0,30));
 	*/
 	/*task 15*/
+	/* 
+	static char *text = "Shall I compare thee to a summer's day? \
+Thou art more lovely and more temperate:\n\
+Rough winds do shake the darling buds of May, \
+And summer's lease hath all too short a date;\n\
+Sometime too hot the eye of heaven shines, \
+And often is his gold complexion dimm'd;\n\
+And every fair from fair sometime declines, \
+By chance or nature's changing course untrimm'd;\n\
+But thy eternal summer shall not fade, \
+Nor lose possession of that fair thou ow'st;\n\
+Nor shall death brag thou wander'st in his shade, \
+When in eternal lines to time thou grow'st:\n\
+So long as men can breathe or eyes can see, \
+So long lives this, and this gives life to thee.";
+	printf("%s",text);
+	char *start,*end;
+	int width;
+
+	width = W_DEFAULT;
+	if( argc>1 )
+	{
+		width = strtol(argv[1],NULL,10);
+		if( width<W_MIN || width>W_MAX )
+			width=W_DEFAULT;	
+	}
+
+	start = end = text;				
+	while( *end )					
+	{
+		if( *end=='\n')
+		{
+			writeline(start,end);	
+			end++;					
+			start = end;		
+		}
+		else
+		{
+			end++;					
+			if( end==start+width )
+			{
+				while( !isspace(*end) )
+				{
+					end--;
+					if( start==end )
+					{
+						end+=width;		
+						break;
+					}
+				}
+				writeline(start,end);
+				if( *end != '\n')		
+					putchar('\n');		
+				end++;					
+				start = end;			
+			}
+		}
+	}
+	writeline(start,end);			
+	if( *end != '\n')				
+		putchar('\n');
+	*/
 	return 0;
 }
