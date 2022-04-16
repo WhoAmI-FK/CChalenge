@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#define PSIZE 20
+#define RSIZE 15
+#define ROWS 8
+#define COLS 8
 char* ordinal(int number){
 	int digit = number%10;
 	char* retVal = number > 20 ? 
@@ -15,6 +19,13 @@ char* ordinal(int number){
 				  : "th"
 				 : "th";
 	return retVal;	
+}
+
+int isLeapYear(int year){
+	if(year%400 == 0) return 1;
+	if(year%100 == 0) return 0;
+	if(year%4 == 0) return 1;
+	return 0;
 }
 
 void center_text(int width, char* text){
@@ -104,6 +115,19 @@ char* mid(char* s, int offset,int len){
 	return buff;
 }
 
+
+void printChessBoard(char chessboard[ROWS][COLS]){
+	int i,j;
+	puts("\n--------");
+	for(i = 0;i<ROWS;++i){
+		for(j = 0;j<COLS;++j){
+			printf("%c",chessboard[i][j]);
+		}
+		puts("\n");
+	}
+	puts("--------");
+}
+
 int main()
 {
 	/* task 1 */
@@ -181,10 +205,147 @@ int main()
 	}
 	*/
 	/* task 6 */
+	/*
 	char string[] = "Once upon a time, there was a string";
 	printf("Original string: %s\n",string);
 	printf("Left %d characters: %s\n",16, left(string,16));
 	printf("Right %d characters: %s\n",18,right(string,18));
 	printf("Middle %d characters: %s\n",11,mid(string,13,11));
+	*/
+	/* task 7 */
+	/*
+	int i;
+	for(i = 1582;i<=2101;++i){
+		if(isLeapYear(i)) printf("%d is a leap year\n",i);
+	}
+	*/
+	/* task 8 */
+	/*
+	char *playlist[PSIZE] = {
+		"Like a Rolling Stone", "Satisfaction", "Imagine",
+		"What's Going On", "Respect", "Good Vibrations",
+		"Johnny B. Goode", "Hey Jude", "What'd I Say",
+		"Smells Like Teen Spirit", "My Generation",
+		"Yesterday", "Blowin' in the Wind", "Purple Haze",
+		"London Calling", "I Want to Hold Your Hand",
+		"Maybellene", "Hound Dog", "Let It Be",
+		"A Change Is Gonna Come"
+	};
+	int frequency[PSIZE];
+	int recent[RSIZE];
+	int x,r,count,found;
+	*/
+	/* initialize */
+	/*
+	srand( (unsigned)time(NULL) );
+	for(x=0;x<PSIZE;x++)
+		frequency[x] = 0;
+	for(x=0;x<RSIZE;x++)
+		recent[x] = -1;			/* -1 because no element is -1 */ 
+
+	
+	/* run through the playlist randomly */
+	/*
+	puts("Playlist:");
+	count = 0;
+	while(count<100)
+	{
+		/* does r appear in recent[]? */
+	/*	found = 1;				/* assume it does */
+	/*	while(found)
+		{
+			r = rand() % PSIZE;		/* random value */
+	/*		found = 0;				/* not found yet */
+	/*		for(x=0;x<RSIZE;x++)
+			{
+				if( r==recent[x] )
+	/*				found=1;		/* found! */
+	/*		}
+		}
+		recent[count%RSIZE] = r;		/* play the song */
+	/*	printf("%3d: Now Playing '%s'\n",
+				count+1,
+				playlist[r]
+			  );
+		frequency[r]++;
+		count++;
+	}
+
+	puts("Song frequency:");
+	for(x=0;x<PSIZE;x++)
+		printf("%s: %d\n",playlist[x],frequency[x]);
+	*/
+	/* task 9 */
+	/*
+	int i,j,_x,_y,count,direction,_pos_x,_pos_y;
+	char chessboard[ROWS][COLS];
+	srand( (unsigned)time(NULL) );
+	direction = 0;
+	count = 0;
+	for(i = 0;i<ROWS;++i){
+		for(j = 0;j<COLS;++j)
+			chessboard[i][j] = '.';
+	}
+	_x = 5;
+	_y = 4;
+	_pos_x = _x;
+	_pos_y = _y;
+	chessboard[_y][_x] = 'K'; 
+	printChessBoard(chessboard);
+	while(1){
+	while(chessboard[_y][_x]!='.'){
+		_x = _pos_x;
+		_y = _pos_y;
+		direction = rand()%8 + 1;
+		switch(direction){
+			case 1:
+				_y++;
+				break;
+			case 2:
+				_y--;
+				break;
+			case 3:
+				_x++;
+				break;
+			case 4:
+				_x--;
+				break;
+			case 5:
+				_x++;
+				_y++;
+				break;
+			case 6:
+				_x--;
+				_y++;
+				break;
+			case 7:
+				_x++;
+				_y--;
+				break;
+			case 8:
+				_x--;
+				_y--;
+				break;
+		}
+	}
+	_pos_x = _x;
+	_pos_y = _y;
+	chessboard[_y][_x]='K';
+	puts("\n");
+	printChessBoard(chessboard);
+	puts("\n");
+	count++;
+	if((_y+1)==ROWS || (_x+1)==COLS){
+		count++;
+		printf("\nTHE END\n");
+		printf("%d MOVES REQUIRED.",count);
+		return;
+	}	
+	}
+	*/
+	/* task 10 */
+	
+	/* task 11 */
+	
 	return 0;
 }
